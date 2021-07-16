@@ -65,6 +65,14 @@ Clone this repository:
 ```
 git clone https://github.com/iamcosta/react-custom-local-storage-hook.git
 ```
+Isntall dependeces:
+```
+npm install
+
+//or 
+
+yarn
+```
 Run:
 ```
 npm run start
