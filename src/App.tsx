@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocalStorage } from './hooks/use-local-storage';
+import { useLocalStorage } from '../';
 import './App.css';
 
 interface userModel {
