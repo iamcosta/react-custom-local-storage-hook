@@ -56,7 +56,8 @@ storageData.removeItem();
 ```js
 storageData.clearStorage();
 // storageData.item = null
-/* any other key previously provided will return null because all of your app's localStorage has been cleared, so be careful */
+/* any other key previously provided will return null because 
+all of your app's localStorage has been cleared, so be careful */
 ```
 ## Take a look
 
