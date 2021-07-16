@@ -42,19 +42,19 @@ const user: {
     age: "24"
 }
 
-storeData.setItem(user);
+storageData.setItem(user);
 // storageData.item = { name: "Iam", lastName: "Costa", age: "24" }
 ```
 
 #### `storageData.removeItem()`
 ```js
-storeData.removeItem();
+storageData.removeItem();
 // storageData.item = null
 ```
 
 #### `storageData.clearStorage()`
 ```js
-storeData.clearStorage();
+storageData.clearStorage();
 // storageData.item = null
 /* any other key previously provided will return null because all of your app's localStorage has been cleared, so be careful */
 ```
