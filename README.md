@@ -1,6 +1,6 @@
 # `react-custom-local-storage-hook`
 
-> Performe localStorage persistence returning state as a feedback helper for components.
+> This perform persistence on localStorage, returning a state as a helper for component.
 
 ## Installation
 
