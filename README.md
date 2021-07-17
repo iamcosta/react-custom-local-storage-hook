@@ -60,9 +60,9 @@ const storageData = useLocalStorage<LocalStorageInterface>({
 
 Now, `storageData` has:
 
-- `data: T | null`: The data stored with <i>baseName</i> as base key name, with provided type or <i>any</i>. This is a state, so you can manager component rendering whenever it changes. This will be <i>null</i> if LocalStorage is clear;
+- `data: T | null`: The data stored with <i>baseName</i> as key base name, with provided type or <i>any</i>. This is a state, so you can manager component rendering whenever it changes. This will be <i>null</i> if LocalStorage is clear;
 
-- `setData(data: T | null): void`: The function that storing each prop of <i>data</i> param as a LocalStorage item with <i>baseName</i> as base key name. 
+- `setData(data: T | null): void`: The function that storing each prop of <i>data</i> param as a LocalStorage item with <i>baseName</i> as key base name. 
 
 - `setItem<I>(key: string, item: I): void`: The function that storing <i>item</i> param inside the LocalStorage data with <i>baseName</i> as the key base name. The <i>key</i> param must be exactly the name of property you want to store;
 
