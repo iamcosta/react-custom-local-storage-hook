@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 
+export function useLocalStorage<S = any>(key: string): {
+    item: S,
+    setItem: React.Dispatch<React.SetStateAction<S | null>>,
+    removeItem: () => void,
+    clearStorage: () => void
+};
 export function useLocalStorage<T>(key: string) {
     const storageData = localStorage.getItem(key);
     const [stateItem, setStateItem] = useState<T | null>(() => {
