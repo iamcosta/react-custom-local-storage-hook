@@ -54,6 +54,7 @@ export function useLocalStorage<T>(config: UseLocalStorageConfigInterface<T>) {
 
     useEffect(() => {
         handleGetData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
