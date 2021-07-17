@@ -1,44 +1,66 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
-export function useLocalStorage<S = any>(key: string): {
-    item: S,
-    setItem: React.Dispatch<React.SetStateAction<S | null>>,
-    removeItem: () => void,
-    clearStorage: () => void
+
+interface useLocalStorageConfig<U> {
+    localStorageName: string;
+    localStorageInitialData: U;
+}
+
+export function useLocalStorage<S = any>(config: useLocalStorageConfig<S>): {
+    data: S,
+    setData: React.Dispatch<React.SetStateAction<S | null>>,
+    setItem: (key: string, data: any) => void,
+    removeItem: (key: string) => void,
+    clearStorage: () => void,
 };
-export function useLocalStorage<T>(key: string) {
-    const storageData = localStorage.getItem(key);
-    const [stateItem, setStateItem] = useState<T | null>(() => {
-        if (storageData) {
-            return JSON.parse(storageData);
+export function useLocalStorage<T>(config: useLocalStorageConfig<T>) {
+
+    const [storageData, setStorageData] = useState<T | null>(() => handleGetData());
+
+    function handleSetData(data: T) {
+        for (var [key, value] of Object.entries(data)) {
+            localStorage.setItem(`${config.localStorageName}/${key}`, JSON.stringify(value));
         }
-        return null;
-    });
+    }
 
-    const handleSetItem = useCallback((item: T | null) => {
-        localStorage.setItem(key, JSON.stringify(item));
-    }, [key]);
+    function handleGetData() {
+        let newData: any = {};
+        for (var [key, value] of Object.entries(config.localStorageInitialData)) {
+            const item = localStorage.getItem(`${config.localStorageName}/${key}`);
+            newData = { ...newData, [key]: item ? JSON.parse(item) : null }
+        }
+        if (newData.constructor === Object && Object.keys(newData).length !== 0) {
+            return newData
+        } else {
+            return null
+        }
+    }
 
-    const handleRemoveItem = useCallback(() => {
-        setStateItem(null);
-        localStorage.removeItem(key);
-    }, [key]);
+    function handleSetItem<A = any>(key: string, data: A): void;
+    function handleSetItem<I>(key: string, data: I) {
+        localStorage.setItem(`${config.localStorageName}/${key}`, JSON.stringify(data));
+        setStorageData(handleGetData());
+    }
 
-    const handleClear = useCallback(() => {
-        setStateItem(null);
+    function handleRemoveItem(key: string) {
+        localStorage.removeItem(`${config.localStorageName}/${key}`);
+        setStorageData(handleGetData());
+    }
+
+    function handleClearStorage() {
         localStorage.clear();
-    }, []);
+        setStorageData(null);
+    }
 
     useEffect(() => {
-        if (stateItem) {
-            handleSetItem(stateItem);
-        }
-    }, [stateItem, handleSetItem]);
+        handleSetData(handleGetData())
+    }, [storageData])
 
     return {
-        item: stateItem,
-        setItem: setStateItem,
+        data: storageData,
+        setData: setStorageData,
+        setItem: handleSetItem,
         removeItem: handleRemoveItem,
-        clearStorage: handleClear
-    };
+        clearStorage: handleClearStorage,
+    }
 }
