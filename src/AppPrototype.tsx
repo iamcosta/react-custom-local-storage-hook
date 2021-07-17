@@ -13,7 +13,7 @@ interface ParentsModel {
   fatherName: string;
 }
 
-const App: React.FC = () => {
+const AppPrototype: React.FC = () => {
   const storageUser = useLocalStoragePrototype<UserModel>('user');
   const storageParents = useLocalStoragePrototype('parents')
 
@@ -129,4 +129,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default AppPrototype;
