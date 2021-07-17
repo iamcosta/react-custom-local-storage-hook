@@ -1,6 +1,6 @@
 # `react-custom-local-storage-hook`
 
-> A TypeScript hook that handles persistence in LocalStorage, returning a state you can use to perform component rendering.
+> A React TS hook that handles persistence in LocalStorage, returning a state you can use to perform component rendering.
 
 ## Installation
 
@@ -21,35 +21,58 @@ import { useLocalStorage } from 'react-custom-local-storage-hook';
 ```
 
 ## Usage
-
+### `useLocalStorage(config: useLocalStorageConfig)`
 ```js
-const storageData = useLocalStorage("@yourLocalStorage/key");
+const storageData = useLocalStorage({
+    baseName: "@yourAppName",
+    initialData: {
+        //...props
+    }
+});
 ```
 Providing a type:
 ```typescript
 interface UserInterface {
     name: string;
-    lastname: string;
-    age: number;
+    lastaName: string;
+    age: string;
+}
+
+interface ParentsInterface {
+    motherName: string;
+    fatherName: string;
+}
+
+interface LocalStorageInterface {
+    user: UserInterface;
+    parents: ParentsInterface;
 }
 
 // {...}
 
-const storageData = useLocalStorage<UserInterface>("@yourLocalStorage/user");
+const storageData = useLocalStorage<LocalStorageInterface>({
+    baseName: "@yourAppName",
+    initialData: {
+        // LocalStorageInterface props
+    }
+});
 ```
 
 Now, `storageData` has:
 
-- `item`: the data stored in the provided key, with provided type or <i>any</i> (this is a state, so you can manager component rendering whenever it changes). This will be <i>null</i> if the provided key is not registered or has been removed;
+- `data: T | null`: The data stored with <i>baseName</i> as base key name, with provided type or <i>any</i>. This is a state, so you can manager component rendering whenever it changes. This will be <i>null</i> if LocalStorage is clear;
 
-- `setItem`: the data storage function in the provided key;
+- `setData(data: T | null): void`: The function that storing each prop of <i>data</i> param as a LocalStorage item with <i>baseName</i> as base key name. 
 
-- `removeItem`: the function of removing data from the provided key;
+- `setItem<I>(key: string, item: I): void`: The function that storing <i>item</i> param inside the LocalStorage data with <i>baseName</i> as the key base name. The <i>key</i> param must be exactly the name of property you want to store;
 
-- `clearStorage`: the function that CLEARS THE ENTIRE (KEEP IT IN MIND) localStorage of your app.
+- `removeItem(key: string): void`: The function that removing a item stored inside the LocalStorage data with <i>baseName</i> as the key base name. The <i>key</i> param must be exactly the name of property you want to remove;
+
+- `clearStorage(): void`: The function that CLEANS ALL (KEEP IN MIND) your application's LocalStorage.
 
 ## Examples
-#### `storageData.setItem(data)`
+
+#### `storageData.setData(data: T | null)`
 ```js
 const user: {
     name: "Iam",
@@ -57,24 +80,69 @@ const user: {
     age: "24"
 }
 
-storageData.setItem(user);
-// storageData.item = { name: "Iam", lastName: "Costa", age: "24" }
+const parents: {
+    motherName: "Francisca",
+    fatherName: "Antônio",
+}
+
+storageData.setData({user, parents});
+/* 
+storageData.data.user = { name: "Iam", lastName: "Costa", age: "24" },
+storageData.data.parents = {motherName: "Francisca" fatherName: "Antônio"}
+*/
 ```
 
-#### `storageData.removeItem()`
+#### `storageData.setItem<I>(key: string, item: I)`
 ```js
-storageData.removeItem();
-// storageData.item = null
+const user: {
+    name: "Iam",
+    lastName: "Costa",
+    age: "24"
+}
+
+storageData.setItem<UserInterface>("user", user);
+// storageData.data.user = { name: "Iam", lastName: "Costa", age: "24" }
+```
+
+#### `storageData.removeItem(key: string)`
+```js
+storageData.removeItem("user");
+// storageData.data.user = null
 ```
 
 #### `storageData.clearStorage()`
 ```js
 storageData.clearStorage();
-// storageData.item = null
+// storageData.data = null
 /* any other key previously provided will return null because 
 all of your app's localStorage has been cleared, so be careful */
 ```
->**Note**: Although the <i>clearStorage</i> function clears the entire LocalStorage, it only returns the state (null value) of the given key, since one object of useLocalStorage does not change the state managed by the other. If your component uses more than one LocalStorage key, you will only get feedback on removing the content from the object that called the <i>clearStorage</i> function. 
+
+
+## Another way...
+There are another hook you can use. The first version of this package with some limitations. Here a example:
+
+```typescript
+import { useLocalStoragePrototype } from 'react-custom-local-storage-hook/prototype'
+
+// {...}
+
+// This handles storage only in the provided key
+const storageItem = useLocalStoragePrototype("@app/key");
+
+const user: {
+    name: "Iam",
+    lastName: "Costa",
+    age: "24"
+}
+
+// given functions
+storageItem.setItem(user);
+storageItem.removeItem();
+storageItem.clearStorage();
+```
+>**Note**: In this case, although the <i>clearStorage</i> function clears the entire LocalStorage, it only returns the state (null value) of the given key, since one object of <i>useLocalStoragePrototype</i> handles only about it own key data.
+
 ## Take a look
 
 Clone this repository:
