@@ -2,33 +2,61 @@ import React, { useState } from 'react';
 import { useLocalStorage } from '../';
 import './App.css';
 
-interface userModel {
+interface UserModel {
   name: string;
   lastname: string;
   age: string;
 }
 
-const App: React.FC = () => {
-  const storage = useLocalStorage<userModel>('user');
+interface ParentsModel {
+  motherName: string;
+  fatherName: string;
+}
 
-  const [user, setUser] = useState<userModel>({
-    name: storage.item ? storage.item.name : '',
-    lastname: storage.item ? storage.item.lastname : '',
-    age: storage.item ? storage.item.age : ''
+const App: React.FC = () => {
+  const storageUser = useLocalStorage<UserModel>('user');
+  const storageParents = useLocalStorage('parents')
+
+  const [user, setUser] = useState<UserModel>({
+    name: storageUser.item ? storageUser.item.name : '',
+    lastname: storageUser.item ? storageUser.item.lastname : '',
+    age: storageUser.item ? storageUser.item.age : ''
   });
 
-  function handleChange(event: any) {
-    const inputName = event.target.getAttribute('name');
-    const inputValue = event.target.value;
+  const [parents, setParents] = useState<ParentsModel>({
+    motherName: storageParents.item ? storageParents.item.motherName : '',
+    fatherName: storageParents.item ? storageParents.item.fatherName : '',
+  });
+
+  const getInputNameValue = (event: any) => ({
+    inputName : event.target.getAttribute('name'),
+    inputValue : event.target.value,
+  })
+
+  function handleChangeUserForm(event: any) {
+    const { inputName, inputValue  } = getInputNameValue(event);
     setUser(prev => ({
       ...prev,
       [inputName]: inputValue
     }));
   }
 
-  function handleSubmit(event: any) {
+  function handleChangeParentsForm(event: any) {
+    const { inputName, inputValue  } = getInputNameValue(event);
+    setParents(prev => ({
+      ...prev,
+      [inputName]: inputValue
+    }));
+  }
+
+  function handleSubmitUser(event: any) {
     event.preventDefault();
-    storage.setItem(user);
+    storageUser.setItem(user);
+  }
+
+  function handleSubmitParents(event: any) {
+    event.preventDefault();
+    storageParents.setItem(parents);
   }
 
   return (
@@ -36,27 +64,48 @@ const App: React.FC = () => {
       <fieldset>
         <label>User Form</label>
         <hr />
-        <form className="app-form" onSubmit={handleSubmit}>
+        <form className="app-form" onSubmit={handleSubmitUser}>
           <label htmlFor="name">Name</label>
           <input
             type="text"
             name="name"
             value={user.name}
-            onChange={handleChange}
+            onChange={handleChangeUserForm}
           />
           <label htmlFor="lastname">Last Name</label>
           <input
             type="text"
             name="lastname"
             value={user.lastname}
-            onChange={handleChange}
+            onChange={handleChangeUserForm}
           />
           <label htmlFor="age">Age</label>
           <input
             type="number"
             name="age"
             value={user.age}
-            onChange={handleChange}
+            onChange={handleChangeUserForm}
+          />
+          <button type="submit">Submit</button>
+        </form>
+      </fieldset>
+      <fieldset>
+        <label>Parent Form</label>
+        <hr />
+        <form className="app-form" onSubmit={handleSubmitParents}>
+          <label htmlFor="motherName">Mother Name</label>
+          <input
+            type="text"
+            name="motherName"
+            value={parents.motherName}
+            onChange={handleChangeParentsForm}
+          />
+          <label htmlFor="fatherName">Father Name</label>
+          <input
+            type="text"
+            name="fatherName"
+            value={parents.fatherName}
+            onChange={handleChangeParentsForm}
           />
           <button type="submit">Submit</button>
         </form>
@@ -65,9 +114,16 @@ const App: React.FC = () => {
         <label>LocalStorage Data</label>
         <hr />
         <p>
-          @yourAppName/user: {JSON.stringify(storage.item)}
+          user: {JSON.stringify(storageUser.item)}
         </p>
-        <button type="button" onClick={storage.clearStorage}>Clear Storage</button>
+        <p>
+          parents: {JSON.stringify(storageParents.item)}
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <button type="button" onClick={storageUser.removeItem}>Remove user</button>
+          <button type="button" onClick={storageParents.removeItem}>Remove parents</button>
+          <button type="button" onClick={storageParents.clearStorage}>Clear Storage</button>
+        </div>
       </fieldset>
     </div>
   );
