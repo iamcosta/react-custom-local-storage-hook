@@ -1,44 +1,71 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-export function useLocalStorage<S = any>(key: string): {
-    item: S,
-    setItem: React.Dispatch<React.SetStateAction<S | null>>,
-    removeItem: () => void,
-    clearStorage: () => void
+export interface UseLocalStorageConfigInterface<U> {
+    baseName: string;
+    initialData: U;
+}
+
+export function useLocalStorage<S = any>(config: UseLocalStorageConfigInterface<S>): {
+    data: S,
+    setData: React.Dispatch<React.SetStateAction<S | null>>,
+    setItem: <C>(key: string, data: C) => void,
+    removeItem: (key: string) => void,
+    clearStorage: () => void,
 };
-export function useLocalStorage<T>(key: string) {
-    const storageData = localStorage.getItem(key);
-    const [stateItem, setStateItem] = useState<T | null>(() => {
-        if (storageData) {
-            return JSON.parse(storageData);
+export function useLocalStorage<T>(config: UseLocalStorageConfigInterface<T>) {
+
+    const [storageData, setStorageData] = useState<T | null>(null);
+
+    const handleSetData = useCallback((data: T | null) => {
+        for (var [key, value] of Object.entries(data ? data : {})) {
+            if (value) {
+                localStorage.setItem(`${config.baseName}/${key}`, JSON.stringify(value));
+            }
         }
-        return null;
-    });
+    }, [config.baseName])
 
-    const handleSetItem = useCallback((item: T | null) => {
-        localStorage.setItem(key, JSON.stringify(item));
-    }, [key]);
+    const handleGetData = useCallback(() => {
+        let newData: any = {};
+        for (var [key] of Object.entries(config.initialData)) {
+            const item = localStorage.getItem(`${config.baseName}/${key}`);
+            newData = { ...newData, [key]: item && JSON.parse(item) }
+        }
+        if (newData.constructor === Object && Object.keys(newData).length !== 0) {
+            setStorageData(newData);
+        } else {
+            setStorageData(null)
+        }
+    }, [config.initialData, config.baseName])
 
-    const handleRemoveItem = useCallback(() => {
-        setStateItem(null);
-        localStorage.removeItem(key);
-    }, [key]);
+    const handleSetItem = useCallback(<I>(key: string, data: I) => {
+        localStorage.setItem(`${config.baseName}/${key}`, JSON.stringify(data));
+        handleGetData()
+    }, [config.baseName, handleGetData])
 
-    const handleClear = useCallback(() => {
-        setStateItem(null);
+    const handleRemoveItem = useCallback((key: string) => {
+        localStorage.removeItem(`${config.baseName}/${key}`);
+        handleGetData()
+    }, [config.baseName, handleGetData])
+
+    const handleClearStorage = useCallback(() => {
         localStorage.clear();
-    }, []);
+        handleGetData()
+    }, [handleGetData])
 
     useEffect(() => {
-        if (stateItem) {
-            handleSetItem(stateItem);
-        }
-    }, [stateItem, handleSetItem]);
+        handleGetData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    useEffect(() => {
+        handleSetData(storageData)
+    }, [storageData, handleSetData])
 
     return {
-        item: stateItem,
-        setItem: setStateItem,
+        data: storageData,
+        setData: setStorageData,
+        setItem: handleSetItem,
         removeItem: handleRemoveItem,
-        clearStorage: handleClear
-    };
+        clearStorage: handleClearStorage,
+    }
 }
