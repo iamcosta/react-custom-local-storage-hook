@@ -1,6 +1,6 @@
 # `react-custom-local-storage-hook`
 
-> This perform persistence on localStorage, returning a state as a helper for component.
+> A TypeScript hook that handles persistence in LocalStorage, returning a state you can use to perform component rendering.
 
 ## Installation
 
@@ -25,12 +25,27 @@ import { useLocalStorage } from 'react-custom-local-storage-hook';
 ```js
 const storageData = useLocalStorage("@yourLocalStorage/key");
 ```
+Providing a type:
+```typescript
+interface UserInterface {
+    name: string;
+    lastname: string;
+    age: number;
+}
+
+// {...}
+
+const storageData = useLocalStorage<UserInterface>("@yourLocalStorage/user");
+```
 
 Now, `storageData` has:
 
-- `item`: the data stored in the provided key (this is a state, so you can manager component rendering whenever it changes);
+- `item`: the data stored in the provided key, with provided type or <i>any</i> (this is a state, so you can manager component rendering whenever it changes). This will be <i>null</i> if the provided key is not registered or has been removed;
+
 - `setItem`: the data storage function in the provided key;
+
 - `removeItem`: the function of removing data from the provided key;
+
 - `clearStorage`: the function that CLEARS THE ENTIRE (KEEP IT IN MIND) localStorage of your app.
 
 ## Examples
@@ -59,6 +74,7 @@ storageData.clearStorage();
 /* any other key previously provided will return null because 
 all of your app's localStorage has been cleared, so be careful */
 ```
+>**Note**: Although the <i>clearStorage</i> function clears the entire LocalStorage, it only returns the state (null value) of the given key, since one object of useLocalStorage does not change the state managed by the other. If your component uses more than one LocalStorage key, you will only get feedback on removing the content from the object that called the <i>clearStorage</i> function. 
 ## Take a look
 
 Clone this repository:
@@ -69,7 +85,7 @@ Install dependecies:
 ```
 npm install
 
-//or 
+// or 
 
 yarn
 ```
@@ -77,7 +93,7 @@ Run:
 ```
 npm run start
 
-//or 
+// or 
 
 yarn start
 ```
