@@ -20,8 +20,8 @@ interface StorageModel {
 
 const App: React.FC = () => {
     const storage = useLocalStorage<StorageModel>({
-        localStorageName: "@app-storage",
-        localStorageInitialData: {
+        baseName: "@app-storage",
+        initialData: {
             user: {
                 name: "",
                 lastname: "",
