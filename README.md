@@ -1,23 +1,24 @@
-# `react-custom-local-storage-hook`
+# `[DEPRECATED] react-custom-local-storage-hook`
 
 > A React TS hook that handles persistence in LocalStorage, returning a state you can use to perform component rendering.
+> THIS REPOSITORY IS FOR SAMPLE PURPOSES ONLY. Npm package is actually [react-state-local-storage](https://github.com/iamcosta/react-state-local-storage).
 
 ## Installation
 
 You can install it with:
 
 ```
-npm install react-custom-local-storage-hook
+npm install react-state-local-storage
 
 // or
 
-yarn add react-custom-local-storage-hook
+yarn add react-state-local-storage
 ```
 
 ## Import
 
 ```js
-import { useLocalStorage } from 'react-custom-local-storage-hook';
+import { useLocalStorage } from 'react-state-local-storage';
 ```
 
 ## Usage
@@ -123,7 +124,7 @@ all of your app's localStorage has been cleared, so be careful */
 There are another hook you can use. The first version of this package with some limitations. Here a example:
 
 ```typescript
-import { useLocalStoragePrototype } from 'react-custom-local-storage-hook/prototype'
+import { useLocalStoragePrototype } from 'react-state-local-storage'
 
 // {...}
 
